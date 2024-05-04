@@ -1,24 +1,3 @@
-class Restaurant {
-  constructor(id, name, imageURL, location, tags, rating, reviews) {
-    this.id = id;
-    this.name = name;
-    this.imageURL = imageURL;
-    this.location = location;
-    this.tags = tags;
-    this.rating = rating;
-    this.reviews = reviews;
-  }
-
-  render() {
-    renderRestaurantName(this.name);
-    renderAddress(this.location.address, this.location.city, this.location.state, this.location.zip_code);
-    renderDescription(this.name, this.tags, this.rating);
-    renderReviews(this.reviews);
-  }
-}
-
-//Ruth
-
 const findDropdown = document.getElementById('find_dropdown')
 const dropdownMenu = document.getElementById('dropdown-menu')
 const restaurantCard = document.getElementById('restaurant-card')
@@ -34,11 +13,6 @@ const dropdownRender = () => {
 
 }
 
-
-//Ali
-
-
-// Function to display restaurant cards
 const displayRestaurants = (restaurants) => {
   console.log("Hello form display")
   const restaurantList = document.getElementById("restaurant-list");
@@ -46,7 +20,6 @@ const displayRestaurants = (restaurants) => {
   restaurants.forEach(restaurant => {
     const tags = restaurant.tags;
     const cuisines = tags.join(', ');
-
 
     const card = document.createElement("div");
     card.classList.add("card", "mb-3");
@@ -62,15 +35,21 @@ const displayRestaurants = (restaurants) => {
       `;
 
     card.addEventListener('click', () => {
-      const queryParams = new URLSearchParams(restaurant);
-      window.location.href = `./restaurant.html?${queryParams}`;
+      const queryParams = new URLSearchParams();
+      queryParams.append('id', restaurant.id);
+      queryParams.append('name', restaurant.name);
+      queryParams.append('imageURL', restaurant.imageURL);
+      queryParams.append('address', restaurant.location.address);
+      queryParams.append('tags', restaurant.tags.join(', '));
+      queryParams.append('rating', restaurant.rating);
+      queryParams.append('reviews', JSON.stringify(restaurant.reviews));
+    
+      window.location.href = `./restaurant.html?${queryParams.toString()}`;
     })
-    fetchRestaurantData(restaurant)
     restaurantList.appendChild(card);
   });
 }
 
-// Function to filter restaurants by cuisine
 const filterRestaurants = (cuisine) => {
   if (cuisine === "all") {
     displayRestaurants(restaurants);
@@ -80,15 +59,11 @@ const filterRestaurants = (cuisine) => {
   }
 }
 
-// Event listener for filter dropdown
 const cuisineFilter = document.getElementById("cuisine-filter");
 cuisineFilter.addEventListener("change", () => {
   const selectedCuisine = cuisineFilter.value;
   filterRestaurants(selectedCuisine);
 });
-
-
-//Ibrahim
 
 const renderRestaurantName = (name = 'Pasta Central') => {
   const restaurantNameElement = document.getElementById('restaurantName');
@@ -145,12 +120,6 @@ const fetchRestaurantData = async () => {
     console.error('Error fetching restaurant data:', error);
   }
 }
-
-const displayRestaurant = (restaurant) => {
-  restaurant = new Restaurant(data.id, data.name, data.image_URL, data.location, data.tags, data.rating, data.reviews);
-  restaurant.render();
-}
-
 
 fetchRestaurantData()
   .then(restaurants => {
