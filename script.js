@@ -14,7 +14,6 @@ const dropdownRender = () => {
 }
 
 const displayRestaurants = (restaurants) => {
-  console.log("Hello form display")
   const restaurantList = document.getElementById("restaurant-list");
   restaurantList.innerHTML = "";
   restaurants.forEach(restaurant => {
@@ -36,14 +35,20 @@ const displayRestaurants = (restaurants) => {
 
     card.addEventListener('click', () => {
       const queryParams = new URLSearchParams();
+      const locationObject = restaurant.location;
+      console.log(locationObject)
+
       queryParams.append('id', restaurant.id);
       queryParams.append('name', restaurant.name);
       queryParams.append('imageURL', restaurant.imageURL);
-      queryParams.append('address', restaurant.location.address);
+      queryParams.append('address', locationObject.address);
+      queryParams.append('city', locationObject.city);
+      queryParams.append('state', locationObject.state);
+      queryParams.append('zip_code', locationObject.zip_code);
       queryParams.append('tags', restaurant.tags.join(', '));
       queryParams.append('rating', restaurant.rating);
       queryParams.append('reviews', JSON.stringify(restaurant.reviews));
-    
+
       window.location.href = `./restaurant.html?${queryParams.toString()}`;
     })
     restaurantList.appendChild(card);
@@ -72,44 +77,49 @@ const renderRestaurantName = (name = 'Pasta Central') => {
   restaurantNameElement.innerHTML = name;
 }
 
-const renderAddress = (address = '456 Noodle Street', city = 'Pastaville', state = 'NY', zipCode = '10001') => {
-  const addressElement = document.getElementById('address');
-  const cityElement = document.getElementById('city');
-  const stateElement = document.getElementById('state');
-  const zipCodeElement = document.getElementById('zipCode');
+// const renderAddress = (address = '456 Noodle Street', city = 'Pastaville', state = 'NY', zipCode = '10001') => {
+//   const addressElement = document.getElementById('address');
+//   const cityElement = document.getElementById('city');
+//   const stateElement = document.getElementById('state');
+//   const zipCodeElement = document.getElementById('zipCode');
 
-  addressElement.innerHTML = address;
-  cityElement.innerHTML = city;
-  stateElement.innerHTML = state;
-  zipCodeElement.innerHTML = zipCode;
-}
+//   console.log(address)
+//   console.log(city)
+//   console.log(state)
+//   console.log(zipCode)
 
-const renderDescription = (restaurantName = 'Pasta Central', cuisines = ['Italian'], rating = 4) => {
-  const description = document.getElementById('description');
+//   addressElement.innerHTML = address;
+//   cityElement.innerHTML = city;
+//   stateElement.innerHTML = state;
+//   zipCodeElement.innerHTML = zipCode;
+// }
 
-  const specialties = cuisines.join(', ');
-  const descriptionText = `Welcome to ${restaurantName}, where culinary excellence meets warm hospitality. Specializing in ${specialties}, our ${rating} star-rated restaurant offers a diverse menu crafted with the finest ingredients sourced locally and globally. From traditional favorites to adventurous creations, our passionate chefs ensure a symphony of flavors to delight your palate. Come experience the essence of gastronomic bliss at ${restaurantName}.`;
+// const renderDescription = (restaurantName = 'Pasta Central', cuisines = ['Italian'], rating = 4) => {
+//   const description = document.getElementById('description');
 
-  description.innerHTML = descriptionText;
-}
+//   const specialties = cuisines.join(', ');
+//   const descriptionText = `Welcome to ${restaurantName}, where culinary excellence meets warm hospitality. Specializing in ${specialties}, our ${rating} star-rated restaurant offers a diverse menu crafted with the finest ingredients sourced locally and globally. From traditional favorites to adventurous creations, our passionate chefs ensure a symphony of flavors to delight your palate. Come experience the essence of gastronomic bliss at ${restaurantName}.`;
 
-const renderReviews = (reviewsData) => {
-  const reviewsContainer = document.getElementById('reviews')
-  reviewsContainer.innerHTML = "";
-  reviewsData.forEach((review) => {
-    const reviewElement = document.createElement("div");
-    reviewElement.classList.add("review");
+//   description.innerHTML = descriptionText;
+// }
 
-    reviewElement.innerHTML = `
-        <div class="review">
-          <p class="fst-italic review-rating"> ${review.user_id} Rating: ${review.rating}/5</p>
-          <p class="lh-1 review-text">${review.text}</p>
-        </div>
-      `;
+// const renderReviews = (reviewsData) => {
+//   const reviewsContainer = document.getElementById('reviews')
+//   reviewsContainer.innerHTML = "";
+//   reviewsData.forEach((review) => {
+//     const reviewElement = document.createElement("div");
+//     reviewElement.classList.add("review");
 
-    reviewsContainer.appendChild(reviewElement);
-  });
-}
+//     reviewElement.innerHTML = `
+//         <div class="review">
+//           <p class="fst-italic review-rating"> ${review.user_id} Rating: ${review.rating}/5</p>
+//           <p class="lh-1 review-text">${review.text}</p>
+//         </div>
+//       `;
+
+//     reviewsContainer.appendChild(reviewElement);
+//   });
+// }
 
 const fetchRestaurantData = async () => {
   try {
