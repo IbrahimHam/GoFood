@@ -12,7 +12,6 @@ const dropdownRender = () => {
   });
 
 }
-
 const displayRestaurants = (restaurants) => {
   const restaurantList = document.getElementById("restaurant-list");
   restaurantList.innerHTML = "";
@@ -55,11 +54,48 @@ const displayRestaurants = (restaurants) => {
   });
 }
 
+const createCuisineOptions = (restaurants) => {
+  const cuisineFilter = document.getElementById("cuisine-filter");
+  const cuisines = new Set();
+
+  // Extract all cuisines from the list of restaurants
+  restaurants.forEach(restaurant => {
+    restaurant.tags.forEach(tag => {
+      cuisines.add(tag);
+    });
+  });
+
+  // Remove existing options
+  cuisineFilter.innerHTML = "";
+
+  // Create option for "All Cuisines"
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All Cuisines";
+  cuisineFilter.appendChild(allOption);
+
+  // Create options for each cuisine
+  cuisines.forEach(cuisine => {
+    const option = document.createElement("option");
+    option.value = cuisine.toLowerCase();
+    option.textContent = cuisine;
+    cuisineFilter.appendChild(option);
+  });
+
+  // Event listener for filter dropdown
+  cuisineFilter.addEventListener("change", () => {
+    const selectedCuisine = cuisineFilter.value;
+    const filteredRestaurants = filterRestaurantsByCuisine(restaurants, selectedCuisine);
+    displayRestaurants(filteredRestaurants);
+  });
+};
+
 const filterRestaurants = (cuisine) => {
   if (cuisine === "all") {
     displayRestaurants(restaurants);
   } else {
     const filteredRestaurants = restaurants.filter(restaurant => restaurant.cuisine === cuisine);
+    console.log(filteredRestaurants)
     displayRestaurants(filteredRestaurants);
   }
 }
@@ -69,57 +105,6 @@ cuisineFilter.addEventListener("change", () => {
   const selectedCuisine = cuisineFilter.value;
   filterRestaurants(selectedCuisine);
 });
-
-const renderRestaurantName = (name = 'Pasta Central') => {
-  const restaurantNameElement = document.getElementById('restaurantName');
-
-  document.title = name
-  restaurantNameElement.innerHTML = name;
-}
-
-// const renderAddress = (address = '456 Noodle Street', city = 'Pastaville', state = 'NY', zipCode = '10001') => {
-//   const addressElement = document.getElementById('address');
-//   const cityElement = document.getElementById('city');
-//   const stateElement = document.getElementById('state');
-//   const zipCodeElement = document.getElementById('zipCode');
-
-//   console.log(address)
-//   console.log(city)
-//   console.log(state)
-//   console.log(zipCode)
-
-//   addressElement.innerHTML = address;
-//   cityElement.innerHTML = city;
-//   stateElement.innerHTML = state;
-//   zipCodeElement.innerHTML = zipCode;
-// }
-
-// const renderDescription = (restaurantName = 'Pasta Central', cuisines = ['Italian'], rating = 4) => {
-//   const description = document.getElementById('description');
-
-//   const specialties = cuisines.join(', ');
-//   const descriptionText = `Welcome to ${restaurantName}, where culinary excellence meets warm hospitality. Specializing in ${specialties}, our ${rating} star-rated restaurant offers a diverse menu crafted with the finest ingredients sourced locally and globally. From traditional favorites to adventurous creations, our passionate chefs ensure a symphony of flavors to delight your palate. Come experience the essence of gastronomic bliss at ${restaurantName}.`;
-
-//   description.innerHTML = descriptionText;
-// }
-
-// const renderReviews = (reviewsData) => {
-//   const reviewsContainer = document.getElementById('reviews')
-//   reviewsContainer.innerHTML = "";
-//   reviewsData.forEach((review) => {
-//     const reviewElement = document.createElement("div");
-//     reviewElement.classList.add("review");
-
-//     reviewElement.innerHTML = `
-//         <div class="review">
-//           <p class="fst-italic review-rating"> ${review.user_id} Rating: ${review.rating}/5</p>
-//           <p class="lh-1 review-text">${review.text}</p>
-//         </div>
-//       `;
-
-//     reviewsContainer.appendChild(reviewElement);
-//   });
-// }
 
 const fetchRestaurantData = async () => {
   try {
@@ -131,9 +116,19 @@ const fetchRestaurantData = async () => {
   }
 }
 
+const filterRestaurantsByCuisine = (restaurants, cuisine) => {
+  if (cuisine === "all") {
+    return restaurants;
+  } else {
+    return restaurants.filter(restaurant => restaurant.tags.includes(cuisine));
+  }
+};
+
 fetchRestaurantData()
   .then(restaurants => {
     displayRestaurants(restaurants)
+    createCuisineOptions(restaurants);
+
   })
   .catch(error => console.error('Error rendering restaurant data:', error));
 
